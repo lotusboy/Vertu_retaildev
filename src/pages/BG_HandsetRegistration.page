@@ -1,0 +1,147 @@
+<apex:page standardController="Handset_Registration__c" extensions="BG_VerifyHandsetDetails">
+  
+    <apex:form id="RegistrationPanel">
+        <apex:pageBlock title="{!$Label.Handset_Registration_Title}" mode="edit" rendered="{!DisplayInputSection}">    
+            <apex:pageBlockButtons location="bottom" id="ButtonPanel">
+            
+            <apex:actionStatus id="Status" title="Please wait..." onstart="loading(true)" onstop="loading(false)">
+                <apex:facet name="stop">
+                    <apex:outputPanel >
+                    <apex:commandButton action="{!HandsetRegistration}" value="{!$Label.Handset_Registration_Button_Label}" status="Status" rerender="RegistrationPanel" id="Processbtn"/>
+                    <apex:commandButton action="{!Redirect}" value="{!$Label.Cancel_Button}" status="Status" immediate="true"/> 
+                    </apex:outputPanel>
+                </apex:facet>
+                <apex:facet name="start">
+                    <apex:outputPanel >
+                    <apex:commandButton action="{!HandsetRegistration}" value="{!$Label.Handset_Registration_Button_Label}" disabled="true"/>
+                    <apex:commandButton action="{!Redirect}" value="{!$Label.Cancel_Button}" disabled="true"/>
+                    </apex:outputPanel>
+                </apex:facet>
+            </apex:actionStatus>  
+            </apex:pageBlockButtons>
+            
+            <apex:outputPanel id="msg">
+                <apex:pagemessages />
+            </apex:outputPanel>
+            
+            <div id="contentLoading" style="display:none;">
+                <div style="text-align: center;"> <p>{!$Label.Loading_Text}</p><br/>
+                    <img src="/img/loading.gif" alt="Loading graphic"/>
+                </div>
+            </div>
+            
+             <apex:pageBlockSection title="{!$Label.Handset_Section_Title}" collapsible="true" columns="2">
+                
+                <apex:pageBlockSectionItem helpText="IMEI Number for Handset">
+                    <apex:outputLabel for="IMEI" value="{!$ObjectType.Handset_Registration__c.fields.IMEI__c.label}"/>
+                    <apex:inputField id="IMEI" value="{!HandsetReg.IMEI__c}" required="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem helpText="VSN for Handset">    
+                    <apex:outputLabel for="VSN" value="{!$ObjectType.Handset_Registration__c.fields.VSN__c.label}"/>       
+                    <apex:inputField id="VSN" value="{!HandsetReg.VSN__c}" required="true"/>  
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="RetailAccount" value="{!$ObjectType.Handset_Registration__c.fields.Retail_Account__c.label}"/> 
+                    <apex:inputField id="RetailAccount" value="{!HandsetReg.Retail_Account__c}" required="false"/>  
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="OtherPofPurchase" value="{!$ObjectType.Handset_Registration__c.fields.Other_Place_of_Purchase__c.label}"/>
+                    <apex:inputField id="OtherPofPurchase" value="{!HandsetReg.Other_Place_of_Purchase__c}" required="false"/> 
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >    
+                    <apex:outputLabel for="DateofPurchase" value="{!$ObjectType.Handset_Registration__c.fields.Date_of_Purchase__c.label}"/> 
+                    <apex:inputField id="DateofPurchase" value="{!HandsetReg.Date_of_Purchase__c}" required="true"/> 
+                </apex:pageBlockSectionItem>    
+            </apex:pageBlockSection>
+            
+            <apex:PageBlockSection title="{!$Label.Vertu_Account_Section_Title}" collapsible="true" columns="2" id="HandsetSection">
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="UserName" value="{!$ObjectType.Handset_Registration__c.fields.User_Name__c.label}"/> 
+                    <apex:inputField id="UserName" value="{!HandsetReg.User_Name__c}" required="true"/>     
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="Password" value="{!$ObjectType.Handset_Registration__c.fields.Password1__c.label}"/>
+                    <apex:inputField id="Password" value="{!HandsetReg.Password1__c}" required="true"/>     
+                </apex:pageBlockSectionItem>
+            </apex:pageblockSection>    
+                
+            <apex:pageblockSection id="SeqA">
+                <apex:pageBlockSectionItem dataStyle="columns:2;">
+                    <apex:outputLabel for="PrivateQuestionPredefined" value="{!$ObjectType.Handset_Registration__c.fields.Private_Question_Pre_defined__c.label}"/>
+                    
+                    <apex:actionRegion id="securityQSsection">
+                    <apex:inputField id="PrivateQuestionPredefined" value="{!HandsetReg.Private_Question_Pre_defined__c}" required="true">
+                        <apex:actionSupport event="onchange" rerender="SeqA"
+                                  status="status1" action="{!RenderSecurityQS}"/>
+                    </apex:inputField>
+                    </apex:actionRegion>
+                    
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem rendered="{!SecurityAnswer}">
+                    <apex:outputLabel for="SecurityAnswer" value="{!$ObjectType.Handset_Registration__c.fields.Security_Answer__c.label}"/> 
+                    <apex:inputField id="SecurityAnswer" value="{!HandsetReg.Security_Answer__c}" required="true"/>   
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem rendered="{!UserDefinedSQ}">
+                    <apex:outputLabel for="PrivateQuestion" value="{!$ObjectType.Handset_Registration__c.fields.Private_Question__c.label}"/> 
+                    <apex:inputField id="PrivateQuestion" value="{!HandsetReg.Private_Question__c}" required="true"/>                  
+                </apex:pageBlockSectionItem>
+                
+            </apex:PageBlockSection>
+            
+            <apex:pageBlockSection title="{!$Label.Services_Section_Header}" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="ServiceOptIn"> 
+                        {!$Label.Concierge_OptIn}
+                    </apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:inputCheckbox id="ServiceOptIn" value="{!HandsetReg.Service_Registration__c}"/>  
+                </apex:pageBlockSectionItem>  
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="{!$Label.Related_Acconts}" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="CustomerAccount" value="{!$ObjectType.Handset_Registration__c.fields.Customer__c.label}"/> 
+                    <apex:inputField id="CustomerAccount" value="{!HandsetReg.Customer__c}" required="true"/>  
+                </apex:pageBlockSectionItem> 
+            </apex:pageBlockSection>
+            
+            <apex:actionStatus startText=" Fetching Security Section" id="status1"></apex:actionStatus>
+
+  </apex:PageBlock>
+  <apex:Pageblock rendered="{!DisplayOutputSection}" title="{!$Label.Handset_Registration_Result_Title}">
+      <apex:pageblockbuttons location="bottom">
+          <apex:commandButton action="{!Redirect}" value="{!$Label.Confirmation_Button}"/>
+      </apex:pageblockbuttons>
+      <apex:pageBlockSection title="{!$Label.Vertu_Account_Create_Result_Panel}" columns="1">
+          <apex:PageBlockSectionItem >
+              <apex:outputText value="{!HandsetValidityStatus}"/>
+          </apex:PageBlockSectionItem>
+      </apex:pageBlockSection>
+  
+  </apex:Pageblock>
+  </apex:form>
+  
+  <script type="text/javascript">
+  function loading(val) {
+    if (val) {
+      document.getElementById('contentLoading').style.display = 'block';
+      document.getElementById('contentLoaded').style.display = 'none';
+    }
+    else {
+      document.getElementById('contentLoading').style.display = 'none';
+      document.getElementById('contentLoaded').style.display = 'block';
+    }
+  }
+</script>
+  
+</apex:page>

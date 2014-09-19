@@ -1,0 +1,90 @@
+<apex:page standardController="Vertu_Account__c" extensions="BG_GetEntitlementExt">
+  
+    <apex:form id="MainForm">
+        <apex:pageBlock title="{!$Label.Create_Entitlement_Header}" mode="edit" rendered="{!ShowEntitlementRequest}">    
+            <apex:pageBlockButtons location="bottom" id="ButtonPanel">
+            
+            <apex:actionStatus id="Status" title="Please wait..." onstart="loading(true)" onstop="loading(false)">
+                <apex:facet name="stop">
+                    <apex:outputPanel >
+                    <apex:commandButton action="{!CreateEntitlementRequest}" value="Add Entitlement" status="Status" rerender="MainForm" id="Processbtn"/>
+                    <apex:commandButton action="{!Redirect}" value="{!$Label.Cancel_Button}" status="Status" immediate="true"/> 
+                    </apex:outputPanel>
+                </apex:facet>
+                <apex:facet name="start">
+                    <apex:outputPanel >
+                    <apex:commandButton action="{!CreateEntitlementRequest}" value="Add Entitlement" disabled="true"/>
+                    <apex:commandButton action="{!Redirect}" value="{!$Label.Cancel_Button}" disabled="true"/>
+                    </apex:outputPanel>
+                </apex:facet>
+            </apex:actionStatus>  
+            </apex:pageBlockButtons>
+            
+            <div id="contentLoading" style="display:none;">
+                <div style="text-align: center;"> <p>{!$Label.Loading_Text}</p><br/>
+                    <img src="/img/loading.gif" alt="Loading graphic"/>
+                </div>
+            </div>
+            
+             <apex:pageBlockSection title="{!$Label.Entitlement_Entry}" collapsible="true" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="Level" value="{!$ObjectType.Entitlement__c.fields.Level__c.label}"/>
+                    <apex:inputField id="Level" value="{!Entitlement.Level__c}" required="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >    
+                    <apex:outputLabel for="Duration" value="{!$ObjectType.Entitlement__c.fields.Request_Duration__c.label}"/>       
+                    <apex:inputField id="Duration" value="{!Entitlement.Request_Duration__c}" required="true"/>  
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="StartDate" value="{!$ObjectType.Entitlement__c.fields.Start_Date__c.label}"/> 
+                    <apex:inputField id="StartDate" value="{!Entitlement.Start_Date__c}" required="true"/>  
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="Reason" value="{!$ObjectType.Entitlement__c.fields.Reason__c.label}"/>
+                    <apex:inputField id="Reason" value="{!Entitlement.Reason__c}" required="true"/> 
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >    
+                    <apex:outputLabel for="Notes" value="{!$ObjectType.Entitlement__c.fields.Notes__c.label}"/> 
+                    <apex:inputField id="Notes" value="{!Entitlement.Notes__c}" required="true"/> 
+                </apex:pageBlockSectionItem>    
+            </apex:pageBlockSection>    
+
+  </apex:PageBlock>
+
+  <apex:Pageblock rendered="{!DisplayOutputSection}" title="{!$Label.Handset_Registration_Result_Title}">
+  
+      <apex:outputPanel id="msg">
+          <apex:pagemessages />
+      </apex:outputPanel>
+      
+      <apex:pageblockbuttons location="bottom">
+          <apex:commandButton action="{!Redirect}" value="{!$Label.Confirmation_Button}"/>
+      </apex:pageblockbuttons>
+      <apex:pageBlockSection title="{!$Label.Vertu_Account_Create_Result_Panel}" columns="1">
+          <apex:PageBlockSectionItem >
+              <apex:outputText value="{!CreateEntitlementStatus}"/>
+          </apex:PageBlockSectionItem>
+      </apex:pageBlockSection>
+  
+  </apex:Pageblock>
+  </apex:form>
+  
+  <script type="text/javascript">
+  function loading(val) {
+    if (val) {
+      document.getElementById('contentLoading').style.display = 'block';
+      document.getElementById('contentLoaded').style.display = 'none';
+    }
+    else {
+      document.getElementById('contentLoading').style.display = 'none';
+      document.getElementById('contentLoaded').style.display = 'block';
+    }
+  }
+</script>
+  
+</apex:page>

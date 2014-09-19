@@ -1,0 +1,65 @@
+<apex:page standardController="Vertu_Account__c" extensions="BG_GetEntitlementExt" title="Get Vertu Entitlement">
+    <apex:form id="MainForm">
+    
+            <apex:actionStatus id="Status" title="Please wait..." onstart="loading(true)" onstop="loading(false)">
+                <apex:facet name="stop">
+                    <apex:outputPanel >
+                        <apex:actionFunction name="GetEntitlementDetails" action="{!GetEntitlementDetails}" rendered="{!ShowEntitlementRequest}" rerender="MainForm" status="Status"/>    
+                    </apex:outputPanel>
+                </apex:facet>
+                <apex:facet name="start">
+                </apex:facet>
+            </apex:actionStatus> 
+            
+            <div id="contentLoading" style="display:none; background-color:#D7D4D9;">
+                <div style="text-align: center;"> <p>{!$Label.Loading_Text}</p><br/>
+                    <img src="/img/loading.gif" alt="Loading graphic"/>
+                </div>
+            </div> 
+        
+        <apex:pageBlock id="OutputPanel" rendered="{!DisplayOutputsection}" title="{!$Label.Handset_Registration_Result_Title}" >
+        <apex:pagemessages id="Msg"/>
+        <apex:pageblockButtons location="bottom">
+            <apex:commandButton value="{!$Label.Confirmation_Button}" action="{!Redirect}"/>
+        </apex:pageblockButtons>
+        
+            <apex:pageBlockSection title="{!$Label.Entitlement_List_Header}">
+                <apex:outputLabel value="{!RemainingEntitlementStatus}" rendered="{!RemainingEntitlementStatus != NULL}"/>
+                <apex:pageBlockTable value="{!EntitlementDetailList.EntList}" var="Ent" style="overflow:auto;width:800px;" rendered="{!EntitlementDetailList.EntList.size != 0}" border="1" cellpadding="5" cellspacing="5">
+                    <apex:column headerValue=" {!$Label.Entitlement_Service_Level}" value="{!Ent.Level__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_StartDate}" value="{!Ent.Start_Date__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_End_Date}" value="{!Ent.End_Date__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_Duration}" value="{!Ent.Duration__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_Duration_Left}" value="{!Ent.Duration_Left__c}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        
+            <apex:pageBlockSection title="{!$Label.Entitlement_Facts_Header}">
+                <apex:pageBlockTable value="{!EntitlementDetailList.EntFacts}" var="Ent" style="overflow:auto;width:800px;" rendered="{!EntitlementDetailList.EntFacts.size != 0}" border="1" cellpadding="5" cellspacing="5">
+                    <apex:column headerValue=" {!$Label.Entitlement_Service_Level}" value="{!Ent.Level__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_Duration}" value="{!Ent.Duration__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_StartDate}" value="{!Ent.Start_Date__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_Reason}" value="{!Ent.Reason__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_Notes}" value="{!Ent.Notes__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_End_Date}" value="{!Ent.End_Date__c}"/>
+                    <apex:column headerValue=" {!$Label.Entitlement_AddedDate}" value="{!Ent.Added_Date__c}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        
+    </apex:form>
+    <script>
+        GetEntitlementDetails(); 
+        
+        function loading(val) {
+        if (val) {
+              document.getElementById('contentLoading').style.display = 'block';
+              document.getElementById('contentLoaded').style.display = 'none';
+            }
+        else {
+          document.getElementById('contentLoading').style.display = 'none';
+          document.getElementById('contentLoaded').style.display = 'block';
+        }
+      }
+    </script>
+</apex:page>

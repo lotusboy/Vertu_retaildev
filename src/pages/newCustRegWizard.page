@@ -1,0 +1,389 @@
+<apex:page controller="NewCustRegController" tabStyle="Account" sidebar="false" >
+  <script>
+  function confirmCancel() {
+      var isCancel = confirm("Are you sure you wish to cancel registration?");
+      if (isCancel) return true;
+   
+     return false;
+  }  
+  </script>
+  <apex:messages />
+    <apex:form id="theForm">
+    <apex:sectionHeader title="{!wizard.PageTitle}" subtitle="{!wizard.PageSubTitle}"/>
+    <apex:actionStatus stopStyle="" startStyle="background-position:center center;background-repeat:no-repeat;background-image:url('{!$Resource.Loading}');opacity:0.6;height:100%;width:100%;position:fixed;top:0px;left:0px;background-color:white;" layout="block" startText=" " stopText="" id="handsetStatus"/>
+    <!-- Begin *** HANDSET DETAILS *** -->
+      <apex:pageBlock title="Handset Details" mode="edit" rendered="{!IF(wizard.step == '1', true, false)}" id="handsetDetails">
+        <apex:pageBlockButtons location="bottom" >
+            <apex:commandButton action="{!next}" value="Next" status="handsetStatus" rerender="theForm"/>
+            
+           
+          <apex:commandButton action="{!cancel}" value="Cancel"  onclick="return confirmCancel()" immediate="true"/>
+         </apex:pageBlockButtons>
+
+      <apex:pageBlockSection columns="1" id="handsetSection">
+            <apex:inputText id="handsetSerial" label="Serial Number" value="{!VSN}" rendered="{!LEN(errorVSN)==0}"/>
+            <apex:pageBlockSectionItem rendered="{!LEN(errorVSN)!=0}" >
+                <apex:outputLabel value="Serial Number" for="handsetSerial"/>
+                <apex:outputPanel >
+                    <apex:inputText id="handsetSerial" label="Serial Number" styleClass="error" value="{!VSN}"/>
+                    <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorVSN}</div>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <br/>
+            <apex:inputText id="handsetIMEI" label="IMEI (last 4 digits)" value="{!IMEI}" rendered="{!LEN(errorIMEI)==0}"/>     
+            <apex:pageBlockSectionItem rendered="{!LEN(errorIMEI)!=0}" >
+                <apex:outputLabel value="IMEI (Last 4 Digits)" />
+                <apex:outputPanel >
+                    <apex:inputText id="handsetIMEI" label="IMEI (Last 4 Digits)" styleClass="error" value="{!IMEI}"/>
+                    <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorIMEI}</div>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+
+    </apex:pageBlock>
+
+
+    <!-- End *** HANDSET DETAILS *** -->
+        
+    <!-- Begin *** PLACE AND DATE OF PURCHASE *** -->
+
+      <apex:pageBlock title="Purchase Information" mode="edit" rendered="{!IF(wizard.step == '2', true, false)}" id="PlaceOfPurchase">
+    
+        <apex:pageBlockButtons location="bottom"  rendered="{!IF(wizard.step == '2', true, false)}">
+            <apex:commandButton action="{!previous}" value="Previous" immediate="true" status="handsetStatus" rerender="theForm"/>
+            <apex:commandButton action="{!next}" value="Next" status="handsetStatus" rerender="theForm"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"  onclick="return confirmCancel()" immediate="true"/>
+        </apex:pageBlockButtons>
+
+        <apex:pageBlockSection title="Place of Purchase" columns="1" rendered="{!IF(wizard.step == '2', true, false)}">
+            <!--  Country Picklist -->
+            <apex:pageBlockSectionItem rendered="{!LEN(errorCountry)==0}"  >
+                <apex:outputLabel value="Country" for="CountryPicklist"/>
+                <apex:selectList tabindex="1" id="CountryPicklist" value="{!RetailStoreCountry}" size="1" required="false" multiselect="false" label="Country">
+                  <apex:selectOptions value="{!countries}"/>
+                  <apex:actionSupport event="onchange" rerender="CityPicklist, CityPicklistError, StorePicklist, StorePicklistError"/>
+                </apex:selectList>
+            </apex:pageBlockSectionItem>   
+            <!--  Country Picklist with error -->
+            <apex:pageBlockSectionItem rendered="{!LEN(errorCountry)!=0}" >
+                <apex:outputLabel value="Country" for="CountryPicklist"/>
+                <apex:outputPanel >
+                    <apex:selectList styleClass="error"  tabindex="1" id="CountryPicklistError" value="{!RetailStoreCountry}" size="1" required="false" multiselect="false" label="Country">
+                      <apex:selectOptions value="{!countries}"/>
+                      <apex:actionSupport event="onchange" rerender="CityPicklist, CityPicklistError, StorePicklist, StorePicklistError"/>
+                    </apex:selectList>
+                    <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorCountry}</div>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>   
+            <br/>
+            <!-- City Picklist -->
+            <apex:pageBlockSectionItem rendered="{!LEN(errorCity)==0}" >
+                <apex:outputLabel value="City" for="CityPicklist"/>
+                <apex:selectList tabindex="2" id="CityPicklist" value="{!RetailStoreCity}" size="1" required="false" label="City">
+                  <apex:selectOptions value="{!cities}"/>
+                  <apex:actionSupport event="onchange" rerender="StorePicklist, StorePicklistError"/>                  
+                </apex:selectList>        
+            </apex:pageBlockSectionItem>
+            <!--  City Picklist with error -->
+            <apex:pageBlockSectionItem rendered="{!LEN(errorCity)!=0}" >
+                <apex:outputLabel value="City" for="CityPicklist"/>
+                <apex:outputPanel >
+                    <apex:selectList styleClass="error" tabindex="2" id="CityPicklistError" value="{!RetailStoreCity}" size="1" required="false" label="City">
+                      <apex:selectOptions value="{!cities}"/>
+                      <apex:actionSupport event="onchange" rerender="StorePicklist, StorePicklistError"/>                  
+                    </apex:selectList>
+                    <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorCity}</div>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>                      
+            <br/>
+            <!-- Store Picklist -->
+            <apex:pageBlockSectionItem rendered="{!LEN(errorBoutique)==0}"  >
+                <apex:outputLabel value="Boutique" for="StorePicklist"/>
+                <apex:selectList tabindex="3" id="StorePicklist" value="{!RetailStoreName}" size="1" required="false" label="Store">
+                  <apex:selectOptions value="{!stores}"/>
+                </apex:selectList>        
+            </apex:pageBlockSectionItem>
+            <!-- Store Picklist with error -->
+            <apex:pageBlockSectionItem rendered="{!LEN(errorBoutique)!=0}"  >
+                <apex:outputLabel value="Boutique" for="StorePicklist"/>
+                <apex:outputPanel >
+                    <apex:selectList styleClass="error" tabindex="3" id="StorePicklistError" value="{!RetailStoreName}" size="1" required="false" label="Store">
+                      <apex:selectOptions value="{!stores}"/>
+                    </apex:selectList>
+                    <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorBoutique}</div>                   
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>        
+
+        <!--  Date of Purchase -->
+        <apex:pageBlockSection title="Date of Purchase" columns="1">
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Date" for="PurchaseDate"/>
+            <apex:inputField value="{!handset.Date_of_Purchase__c}" id="PurchaseDate"  required="true" />
+            </apex:pageBlockSectionItem>                      
+        </apex:pageBlockSection>
+
+
+    </apex:pageBlock>    
+    <!-- End   *** PLACE AND DATE OF PURCHASE *** -->
+    
+    <!-- Begin *** CUSTOMER DETAILS *** -->
+
+     <apex:pageBlock title="Customer Information" mode="edit" rendered="{!IF((wizard.step == '3' && wizard.type=='NewCustReg') || (wizard.step == '3' && wizard.type=='AddNewVertuAcc'), true, false)}">
+       
+        <apex:pageBlockSection columns="2" >
+            <apex:inputField value="{!contact.Salutation}" required="true"/>
+            <apex:inputField value="{!account.Gender__pc}" required="true"/>    
+        </apex:pageBlockSection>
+        <apex:pageBlockSection columns="2" >
+
+            <apex:inputField value="{!contact.FirstName}" required="true"/> 
+            <apex:inputField value="{!account.Vertu_Spoken_Language__c}" required="true"/>  
+        </apex:pageBlockSection>
+       <apex:pageBlockSection columns="2" >
+            <apex:inputField value="{!contact.LastName}" required="true"/>  
+            <apex:inputField value="{!account.Nationality__pc}" required="true"/>   
+        </apex:pageBlockSection>            
+       <apex:pageBlockSection columns="2" >
+            <apex:inputField value="{!account.Country_of_Residence__pc}" required="true"/>   
+        </apex:pageBlockSection>  
+
+    </apex:pageBlock>
+ 
+    <apex:pageBlock title="Contact Details" mode="edit" rendered="{!IF((wizard.step == '3' && wizard.type=='NewCustReg') || (wizard.step == '3' && wizard.type=='AddNewVertuAcc'), true, false)}">
+
+        
+        <apex:pageBlockSection columns="2">
+        
+            <apex:inputField value="{!account.PersonMobilePhone}" required="true"/>
+            <apex:inputField value="{!account.PersonEmail}" required="true"/>
+        </apex:pageBlockSection>
+
+        <apex:pageBlockSection columns="2">
+        
+            <apex:inputField value="{!account.PersonHomePhone}"/>       
+            <apex:inputField value="{!account.Secondary_Email_Address__pc}"/>
+        </apex:pageBlockSection>
+ 
+         <apex:pageBlockSection columns="2">       
+            <apex:inputField value="{!account.PersonOtherPhone}"/>
+        </apex:pageBlockSection>
+     </apex:pageBlock>
+        
+    <apex:pageBlock title="Address Information" mode="edit" rendered="{!IF((wizard.step == '3' && wizard.type=='NewCustReg') || (wizard.step == '3' && wizard.type=='AddNewVertuAcc'), true, false)}">
+
+        <apex:pageBlockSection columns="1">
+            <apex:inputField value="{!account.PersonMailingStreet}"/>
+
+            <apex:inputField value="{!account.PersonMailingCity}"/>
+            <apex:inputField value="{!account.PersonMailingState}"/>
+            <apex:inputField value="{!account.PersonMailingPostalCode}"/>
+            <apex:inputField value="{!account.PersonMailingCountry}"/>
+        </apex:pageBlockSection>    
+  
+        <apex:pageBlockButtons location="bottom" >
+            <apex:commandButton action="{!previous}" value="Previous" immediate="true" status="handsetStatus" rerender="theForm"/>
+            <apex:commandButton action="{!next}" value="Next" status="handsetStatus" rerender="theForm"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"  onclick="return confirmCancel()" immediate="true"/>
+<!--            <apex:commandButton action="{!testData}" value="Populate Test Data"  status="handsetStatus" rerender="theForm" immediate="true"/>-->
+        </apex:pageBlockButtons>          
+    </apex:pageBlock>
+
+    <!-- End ***  CUSTOMER DETAILS *** -->        
+
+    <!-- Begin *** USERNAME AND PASSWORD INPUT *** -->   
+        <apex:pageBlock title="Vertu Account Credentials" id="UsernameAndPassword" mode="edit" rendered="{!IF((wizard.step == '4' && wizard.type=='NewCustReg') || (wizard.step == '4' && wizard.type=='AddNewVertuAcc'), true, false)}">
+            <apex:pageBlockSection columns="1" id="accountCredentialsSection">
+                <apex:inputText id="Username" label="Username" value="{!VertuUsername}" rendered="{!LEN(errorUsername)==0}" />
+                <apex:pageBlockSectionItem rendered="{!LEN(errorUsername)!=0}" >
+                    <apex:outputLabel value="Username" />
+                    <apex:outputPanel >
+                        <apex:inputText id="Username" label="Username" styleClass="error" value="{!VertuUsername}"/>
+                        <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorUsername}</div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem />
+                <apex:inputSecret id="NewPassword" label="New Password" value="{!VertuPassword}" rendered="{!LEN(errorVertuPassword)==0}"/>         
+                <apex:pageBlockSectionItem rendered="{!LEN(errorVertuPassword)!=0}" >
+                    <apex:outputLabel value="New Password" />
+                    <apex:outputPanel >
+                        <apex:inputSecret id="NewPassword" label="New Password" styleClass="error" value="{!VertuPassword}"/>
+                        <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorVertuPassword}</div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:inputSecret id="ConfirmPassword" label="Confirm Password" value="{!VertuPasswordConfirm}" rendered="{!LEN(errorVertuPasswordConfirm)==0}"/>
+                <apex:pageBlockSectionItem rendered="{!LEN(errorVertuPasswordConfirm)!=0}" >
+                    <apex:outputLabel value="Confirm Password" />
+                    <apex:outputPanel >
+                        <apex:inputSecret id="ConfirmPassword" label="Confirm Password" styleClass="error" value="{!VertuPasswordConfirm}"/>
+                        <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorVertuPasswordConfirm}</div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            
+				<!-- Security Question Picklist -->
+	            <apex:pageBlockSectionItem rendered="{!LEN(errorSecretQuestion)==0}"  >
+	                <apex:outputLabel value="Security Question" for="SecretQuestionPicklist"/>
+					
+	                <apex:selectList tabindex="4" id="SecretQuestionPicklist" value="{!SecretQuestion}" size="1" required="false" label="Security Question">
+	                  	 
+	                  	<apex:selectOptions value="{!SecretQuestionPicklist}"/>
+	                	<apex:actionSupport event="onchange" rerender="CustomSecretQuestionBlock"/>
+	                </apex:selectList>
+	                
+	            </apex:pageBlockSectionItem>
+	            <!-- Security Picklist with error -->
+	            <apex:pageBlockSectionItem rendered="{!LEN(errorSecretQuestion)!=0}"  >
+	                <apex:outputLabel value="Security Question" for="SecretQuestionPicklist"/>
+	                <apex:outputPanel >
+	                    <apex:selectList styleClass="error" tabindex="4" id="SecurityPicklistError" value="{!SecretQuestion}" size="1" required="false" label="Security Question">
+	                      <apex:selectOptions value="{!SecretQuestionPicklist}"/>
+	                      <apex:actionSupport event="onchange" rerender="CustomSecretQuestionBlock"/>
+	                    </apex:selectList>
+	                    <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorSecretQuestion}</div>                   
+	                </apex:outputPanel>
+	            </apex:pageBlockSectionItem> 
+	        </apex:pageBlockSection>
+            
+				 
+            	<!-- Write your own security question -->
+			<apex:pageBlockSection columns="1" id="CustomSecretQuestionBlock">
+				<apex:inputText label="Write Security Question" id="CustomSecretQuestion"  value="{!CustomSecretQuestion}" rendered="{!AND(isCustomSecretQuestion == true, LEN(errorCustomSecretQuestion)== 0) }"  />
+                <apex:pageBlockSectionItem rendered="{!LEN(errorCustomSecretQuestion)!=0}" >
+                    <apex:outputLabel value="Write Security Question" />
+                    <apex:outputPanel >
+                        <apex:inputText id="CustomSecretQuestion" label="Write Security Question" styleClass="error" value="{!CustomSecretQuestion}"/>
+                        <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorCustomSecretQuestion}</div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+				           
+            	<!-- Security Answer  -->
+ 			<apex:pageBlockSection columns="1" id="SecretAnswerBlock">
+                <apex:inputText id="SecretAnswer" label="Security Answer" value="{!SecretAnswer}" rendered="{!LEN(errorSecretAnswer)==0}" />
+                <apex:pageBlockSectionItem rendered="{!LEN(errorSecretAnswer)!=0}" >
+                    <apex:outputLabel value="Security Answer" />
+                    <apex:outputPanel >
+                        <apex:inputText id="SecretAnswer" label="Security Answer" styleClass="error" value="{!SecretAnswer}"/>
+                        <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorSecretAnswer}</div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                            	
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+
+ 
+        <apex:pageBlock title="Marketing Preferences" mode="edit" rendered="{!IF((wizard.step == '4' && wizard.type=='NewCustReg') || (wizard.step == '4' && wizard.type=='AddNewVertuAcc'), true, false)}">
+
+        <apex:pageBlockButtons location="bottom" >
+            <apex:commandButton action="{!previous}" value="Previous" immediate="true" status="handsetStatus" rerender="theForm"/>
+            <apex:commandButton action="{!next}" value="Next" status="handsetStatus" rerender="theForm"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"  onclick="return confirmCancel()" immediate="true"/>
+            
+        </apex:pageBlockButtons>          
+        
+         <apex:pageBlockSection columns="1">                
+            <apex:inputCheckbox value="{!MarketingOptIn}" label="Receive marketing communications from Vertu" />
+         </apex:pageBlockSection>
+        </apex:pageBlock>
+    
+    <!-- End *** USERNAME AND PASSWORD INPUT *** -->        
+
+    <!--  Begin *** CONFIRM DETAIL PAGE *** -->
+
+        <!-- Customer Details -->
+      <apex:pageBlock title="Customer Details" mode="detail" rendered="{!IF((wizard.step == '5' && wizard.type=='NewCustReg') || (wizard.step == '5' && wizard.type=='AddNewVertuAcc'), true, false)}">
+      <apex:pageBlockSection columns="2">
+            <apex:outputText label="Title" value="{!contact.salutation}" id="title"  />
+            <apex:outputText label="First Name" value="{!contact.FirstName}" id="FirstName"  />
+            <apex:outputText label="Last Name" value="{!contact.LastName}" id="LastName"  />
+            <apex:outputText label="Gender" value="{!account.Gender__pc}" id="Gender"  />
+            <apex:outputText label="Spoken Language" value="{!account.Vertu_Spoken_Language__c}" id="SpokenLanguage"  />
+            <apex:outputText label="Nationality" value="{!account.Nationality__pc}" id="Nationality"  />
+      </apex:pageBlockSection>
+              
+      </apex:pageBlock>
+
+        <!-- Contact Details -->
+      <apex:pageBlock title="Customer Details" mode="detail" rendered="{!IF((wizard.step == '5' && wizard.type=='NewCustReg') || (wizard.step == '5' && wizard.type=='AddNewVertuAcc'), true, false)}">
+      <apex:pageBlockSection columns="2">
+            <apex:outputText label="Mobile Phone" value="{!account.PersonMobilePhone}" id="title"  />
+            <apex:outputText label="Primary Email" value="{!account.PersonEmail}" id="PrimaryEmail"  />
+            <apex:outputText label="Home Phone" value="{!account.PersonHomePhone}" id="HomePhone"  />
+            <apex:outputText label="Secondary Email" value="{!account.Secondary_Email_Address__pc}" id="SecondaryEmail"  />
+            <apex:outputText id="username" label="User Name" value="{!VertuUserName}"/>            
+      </apex:pageBlockSection>
+      </apex:pageBlock>
+
+        <!-- Address Details -->
+      <apex:pageBlock title="Address Details" mode="detail" rendered="{!IF((wizard.step == '5' && wizard.type=='NewCustReg') || (wizard.step == '5' && wizard.type=='AddNewVertuAcc'), true, false)}">
+      <apex:pageBlockSection columns="1">
+            <apex:outputText label="Street Address" value="{!account.PersonMailingStreet}" id="StreetAddress"  />
+            <apex:outputText label="City" value="{!account.PersonMailingCity}" id="City"  />
+            <apex:outputText label="Postal Code" value="{!account.PersonMailingPostalCode}" id="PostalCode"  />
+            <apex:outputText label="Country" value="{!account.PersonMailingCountry}" id="Country"  />
+      </apex:pageBlockSection>
+      </apex:pageBlock>
+
+        <!-- Place of Purchase Details -->
+      <apex:pageBlock title="Handset Details" mode="detail" rendered="{!IF((wizard.step == '5' && wizard.type=='NewCustReg') || (wizard.step=='3' && wizard.type='AddHandsetToVertuAcc') || (wizard.step == '5' && wizard.type=='AddNewVertuAcc') , true, false)}">
+      <apex:pageBlockSection columns="2">
+            <apex:outputField id="purchaseDate" label="Purchase Date" value="{!handset.Date_of_Purchase__c}" />
+            <apex:outputText label="Country" value="{!RetailStoreCountry}" id="RetailStoreCountry"  />
+            <apex:outputText label="City" value="{!RetailStoreCity}" id="RetailStoreCity"  />
+            <apex:outputText label="Boutique" value="{!RetailStoreName}" id="RetailStoreName"  />
+            <apex:outputText id="handsetSerial" label="Serial Number" value="{!VSN}"/>
+            <apex:outputText id="handsetIMEI" label="IMEI" value="{!IMEI}"/> 
+            
+      </apex:pageBlockSection>
+    </apex:pageBlock>
+        
+    <!-- Privacy Policy T&Cs -->
+    <apex:pageBlock title="Privacy Policy" mode="detail" rendered="{!IF((wizard.step == '5' && wizard.type=='NewCustReg') || (wizard.step=='3' && wizard.type='AddHandsetToVertuAcc') || (wizard.step == '5' && wizard.type=='AddNewVertuAcc') , true, false)}">
+        
+        <apex:pageBlockSection columns="1">
+
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockButtons location="bottom" >
+          <apex:commandButton action="{!previous}" value="Back" status="handsetStatus" rerender="theForm"/>
+          <apex:commandButton action="{!next}"  value="Save" status="handsetStatus" rerender="theForm"/>
+          <apex:commandButton action="{!cancel}" value="Cancel"  onclick="return confirmCancel()" immediate="true"/>
+        </apex:pageBlockButtons>
+
+        <apex:pageBlockSection columns="1">
+            <apex:inputCheckbox required="true" value="{!TermsAndConditions}" label="I have read and accept Vertu’s site terms and privacy policy."  rendered="{!LEN(errorTermsAndConditions)==0}" />                 
+            <apex:pageBlockSectionItem rendered="{!LEN(errorTermsAndConditions)!=0}" >
+                <apex:outputLabel value="I have read and accept Vertu’s site terms and privacy policy." />
+                <apex:outputPanel >
+                    <apex:inputCheckbox styleClass="error" value="{!TermsAndConditions}" label="I have read and accept Vertu’s site terms and privacy policy."/>
+                    <div class="errorMsg"><strong>Error:</strong>&nbsp;{!errorTermsAndConditions}</div>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+                 
+    </apex:pageBlock>
+    
+    <!--  *** End CONFIRM DETAIL PAGE -->   
+    
+    <!--  *** Begin DISPLAY RESULTS -->
+        <!-- Customer Details -->
+        <apex:pageBlock mode="detail" rendered="{!IF((wizard.step == '6' && wizard.type=='NewCustReg') || (wizard.step=='4' && wizard.type='AddHandsetToVertuAcc') || (wizard.step == '6' && wizard.type=='AddNewVertuAcc') , true, false)}">
+            <apex:pageBlockSection columns="1">
+            <!--   <apex:outputText label="Result Body" value="{!VregResponseBody}" id="body" /> -->  
+            <!--   <apex:outputText label="Code: " value="{!response.code}" id="code"  /> --> 
+            
+            <apex:outputText label="Result: " value="{!response.result}" id="result"  />
+            <!--   <apex:outputText label="Success: " value="{!response.success}" id="success"  /> --> 
+            </apex:pageBlockSection>
+
+            <apex:pageBlockButtons location="bottom" >
+                <apex:commandButton id="retryReg"  action="{!retryRegistration}" value="Retry Registration" rendered="{!NOT(response.success)}" status="handsetStatus" rerender="theForm" />
+                <apex:commandButton id="accDetail" action="{!navigateToAccountDetail}" value="View Account Detail" rendered="{!response.success}"/>
+                <apex:commandButton id="done" action="{!navigateToHome}" value="Home" />
+                
+            </apex:pageBlockButtons>
+
+        </apex:pageBlock>    
+    <!--  *** End DISPLAY RESULTS -->
+  </apex:form>
+</apex:page>

@@ -1,0 +1,137 @@
+<apex:page standardController="Vertu_Account__c" extensions="BG_SOA_HandsetRegistration">
+    
+    <apex:form id="RegistrationPanel">
+        
+        <apex:pageBlock id="HandsetSection" tabStyle="Handset__c" title="{!$ObjectType.Handset__c.label}" rendered="{!DisplayInputSection}">
+            
+            <apex:pageBlockButtons location="bottom" id="ButtonPanel">
+            
+            <apex:actionStatus id="Status" title="Please wait..." onstart="loading(true)" onstop="loading(false)">
+                <apex:facet name="stop">
+                    <apex:outputPanel >
+                        <apex:commandButton action="{!HandsetRegistration}" value="{!$Label.Handset_Registration_Button_Label}" status="Status" rerender="RegistrationPanel"/>
+                        <apex:commandButton action="{!Redirect}" value="{!$Label.Cancel_Button}" status="Status" immediate="true"/>  
+                    </apex:outputPanel>
+                </apex:facet>
+                <apex:facet name="start">
+                    <apex:outputPanel >
+                    <apex:commandButton action="{!HandsetRegistration}" value="{!$Label.Handset_Registration_Button_Label}" disabled="true"/>
+                    <apex:commandButton action="{!Redirect}" value="{!$Label.Cancel_Button}" disabled="true"/>
+                    </apex:outputPanel>
+                </apex:facet>
+            </apex:actionStatus>  
+            </apex:pageBlockButtons>
+            
+            <apex:outputPanel id="msg">
+                <apex:pagemessages />
+            </apex:outputPanel>
+            
+            <div id="contentLoading" style="display:none;">
+                <div style="text-align: center;"> <p>{!$Label.Loading_Text}</p><br/>
+                    <img src="/img/loading.gif" alt="Loading graphic"/>
+                </div>
+            </div>
+        
+            <!--<apex:pageBlockSection columns="2">
+                <apex:pageblockSectionItem >
+                    <apex:outputLabel for="Operation" value="Please Select an Operation from the dropdown:"/>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem >
+                    <apex:actionRegion >
+                    <apex:selectList id="Operation" multiselect="false" onfocus="background-color:grey;" value="{!SelectedOperation}" size="1">
+                        <apex:selectOptions value="{!OperationType}" ></apex:selectOptions>
+                        <apex:actionSupport event="onchange" rerender="HandsetSection"
+                                  status="" action="{!CheckUserStep}"/>
+                    </apex:selectList>
+                    </apex:actionRegion>
+                </apex:pageblockSectionItem>
+            </apex:pageBlockSection>-->
+            
+            <apex:pageBlockSection title="{!$Label.Handset_Registration_Title}" rendered="{!DisplayInputSection}">
+            
+           <apex:pageBlockSectionItem helpText="Vreg Id from Vertu Account">
+              <apex:outputLabel for="VregId" value="{!$ObjectType.Handset__c.fields.Vreg_ID_Handset__c.label}"/>
+              <apex:inputField id="VregId" value="{!NewHandset.Vreg_ID_Handset__c}" required="true"/>
+           </apex:pageBlockSectionItem>
+          
+           <apex:pageBlockSectionItem helpText="IMEI Number for Handset">
+              <apex:outputLabel for="IMEI" value="{!$ObjectType.Handset__c.fields.IMEI__c.label}"/>
+              <apex:inputField id="IMEI" value="{!NewHandset.IMEI__c}" required="true"/>
+           </apex:pageBlockSectionItem>
+                
+           <apex:pageBlockSectionItem helpText="VSN for Handset">    
+              <apex:outputLabel for="VSN" value="{!$ObjectType.Handset__c.fields.VSN__c.label}"/>       
+              <apex:inputField id="VSN" value="{!NewHandset.VSN__c}" required="true"/>  
+           </apex:pageBlockSectionItem>
+                
+           <apex:pageBlockSectionItem >
+              <apex:outputLabel for="OtherPofPurchase" value="{!$ObjectType.Handset_Registration__c.fields.Other_Place_of_Purchase__c.label}"/>
+              <apex:inputField id="OtherPofPurchase" value="{!NewHandset.Other_Place_of_Purchase__c}" required="false"/> 
+           </apex:pageBlockSectionItem>
+                
+           <apex:pageBlockSectionItem >    
+              <apex:outputLabel for="DateofPurchase" value="{!$ObjectType.Handset__c.fields.Date_of_Purchase__c.label}"/> 
+              <apex:inputField id="DateofPurchase" value="{!NewHandset.Date_of_Purchase__c}" required="true"/> 
+           </apex:pageBlockSectionItem>
+                
+           <apex:pageBlockSectionItem >
+             <apex:outputLabel for="RetailAccount" value="{!$ObjectType.Handset__c.fields.Place_of_Purchase__c.label}"/> 
+             <apex:inputField id="RetailAccount" value="{!NewHandset.Place_of_Purchase__c}" required="false"/>  
+           </apex:pageBlockSectionItem>
+          </apex:pageBlockSection>
+          
+          <!--<apex:pageBlockSection title="{!$Label.Handset_Registration_Title}" rendered="{!ExistingHandsetOption}" id="ExistingHandsetSec">
+              <apex:pageblockSectionItem >
+                  <apex:outputLabel for="ExistingHandsetList" value="Please Select a Handset:"/>
+              </apex:pageblockSectionItem>
+              <apex:pageblockSectionItem >
+                  <apex:selectList id="ExistingHandsetList" multiselect="false" value="{!ExistingHandsetId}" size="1">
+                      <apex:selectOptions value="{!HandsetList }"/>
+                  </apex:selectList>
+              </apex:pageblockSectionItem>
+          </apex:pageBlockSection>-->
+         
+          <apex:pageblocksection title="{!$Label.Services_Section_Header}" columns="2">        
+              <apex:pageBlockSectionItem >
+                  <apex:outputLabel for="ServiceOptIn"> 
+                     {!$Label.Concierge_OptIn}
+                  </apex:outputLabel>
+             </apex:pageBlockSectionItem>
+         
+             <apex:pageBlockSectionItem >
+                 <apex:inputCheckbox id="ServiceOptIn" value="{!NewHandset.Service_Registration__c}"/>  
+                 </apex:pageBlockSectionItem>  
+             </apex:pageblocksection> 
+             <apex:pageBlockSection >
+                 <apex:pageBlockSectionItem >
+                     <apex:actionStatus startText="{!$Label.Status}" id="status"></apex:actionStatus>
+                 </apex:pageBlockSectionItem>
+             </apex:pageBlockSection>
+       
+  </apex:pageBlock>
+
+  <apex:Pageblock rendered="{!DisplayOutputSection}" title="{!$Label.Handset_Registration_Result_Title}">
+      <apex:pageblockbuttons location="bottom">
+          <apex:commandButton action="{!Redirect}" value="{!$Label.Confirmation_Button}"/>
+      </apex:pageblockbuttons>
+      <apex:pageBlockSection title="{!$Label.Vertu_Account_Create_Result_Panel}" columns="1">
+              <apex:outputText value="{!HandsetValidityStatus}"/>
+      </apex:pageBlockSection>
+  
+  </apex:Pageblock>
+  </apex:form>
+  
+  <script type="text/javascript">
+  function loading(val) {
+    if (val) {
+      document.getElementById('contentLoading').style.display = 'block';
+      document.getElementById('contentLoaded').style.display = 'none';
+    }
+    else {
+      document.getElementById('contentLoading').style.display = 'none';
+      document.getElementById('contentLoaded').style.display = 'block';
+    }
+  }
+</script>
+  
+</apex:page>

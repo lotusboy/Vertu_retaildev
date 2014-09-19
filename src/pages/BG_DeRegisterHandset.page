@@ -1,0 +1,48 @@
+<apex:page standardController="Handset__c" extensions="BG_DeRegisterHandset" tabStyle="Handset__c">
+    <apex:form id="MainForm">
+    
+            <apex:actionStatus id="Status" title="Please wait..." onstart="loading(true)" onstop="loading(false)">
+                <apex:facet name="stop">
+                    <apex:outputPanel >
+                        <apex:actionFunction name="DeRegistration" action="{!DeRegistration}" rendered="{!SendDeRegistrationRequest}" reRender="MainForm" status="Status"/>    
+                    </apex:outputPanel>
+                </apex:facet>
+                <apex:facet name="start">
+                    <apex:outputPanel >
+                        <apex:outputLabel value="Processing your request" style="background-color: #C4B9B9; font-weight: bold; color:#FBF7FC; font-size:16px"/>
+                    </apex:outputPanel>
+                </apex:facet>
+            </apex:actionStatus> 
+            
+            <div id="contentLoading" style="display:none; background-color:#D7D4D9;">
+                <div style="text-align: center;"> <p>{!$Label.Loading_Text}</p><br/>
+                    <img src="/img/loading.gif" alt="Loading graphic"/>
+                </div>
+            </div> 
+        
+        <apex:pageBlock id="OutputPanel" rendered="{!DisplayOutputsection}" title="{!$Label.Handset_Registration_Result_Title}" tabStyle="Handset__c">
+        <apex:pagemessages id="Msg"/>
+        <apex:pageblockButtons location="bottom">
+            <apex:commandButton action="{!Redirect}" value="{!$Label.Confirmation_Button}"/>
+        </apex:pageblockButtons>
+            <apex:pageBlockSection columns="1" title="{!$Label.Vertu_Account_Create_Result_Panel}">
+                    <apex:outputLabel value="{!DeRegistrationStatus}" rendered="{!Success}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        
+    </apex:form>
+    <script>
+        DeRegistration(); 
+        
+        function loading(val) {
+        if (val) {
+              document.getElementById('contentLoading').style.display = 'block';
+              document.getElementById('contentLoaded').style.display = 'none';
+            }
+        else {
+          document.getElementById('contentLoading').style.display = 'none';
+          document.getElementById('contentLoaded').style.display = 'block';
+        }
+      } 
+    </script>
+</apex:page>

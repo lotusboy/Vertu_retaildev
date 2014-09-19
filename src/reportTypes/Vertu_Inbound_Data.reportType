@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <baseObject>Vertu_Inbound_Data__c</baseObject>
+    <category>admin</category>
+    <deployed>true</deployed>
+    <description>Use for basic analysis and monitoring of the messages from VREG and Qforce</description>
+    <label>Vertu Inbound Data</label>
+    <sections>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Id</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Owner</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Name</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>CreatedDate</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>CreatedBy</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>LastModifiedDate</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>LastModifiedBy</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Inbound_Message__c</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Detail__c</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>Status__c</field>
+            <table>Vertu_Inbound_Data__c</table>
+        </columns>
+        <masterLabel>Vertu Inbound Data</masterLabel>
+    </sections>
+</ReportType>

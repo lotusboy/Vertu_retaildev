@@ -1,0 +1,60 @@
+<apex:page controller="BG_KeyGeneratorController">
+  
+    <apex:form >
+        <apex:pageBlock title="{!$Label.Encryption_Page_Header}">    
+            
+            <div id="contentLoading" style="display:none; background-color:#D7D4D9;">
+                <div style="text-align: center;"> <p>{!$Label.Loading_Text}</p><br/>
+                    <img src="/img/loading.gif" alt="Loading graphic"/>
+                </div>
+            </div>
+            
+            <apex:outputPanel id="msg">
+                <apex:pagemessages />
+            </apex:outputPanel>
+                        
+            <apex:pageBlockButtons location="bottom">
+            <apex:actionStatus id="Status" title="Please wait..." onstart="loading(true)" onstop="loading(false)">
+                <apex:facet name="stop">
+                <apex:outputPanel >
+                    <apex:commandButton action="{!GenerateEncryptionkey128}" value="{!$Label.Encryption_Key_Button}" status="Status" rerender="KeyPanel"/>
+                    <apex:commandButton action="{!Redirect}" value="{!$Label.Cancel_Button}" immediate="true"/> 
+                </apex:outputPanel>                
+                </apex:facet>
+               
+                <apex:facet name="start">
+                <apex:outputPanel >
+                    <apex:commandButton action="{!GenerateEncryptionkey128}" value="{!$Label.Encryption_Key_Button}" disabled="true"/>
+                    <apex:commandButton action="{!Redirect}" value="{!$Label.Cancel_Button}" disabled="true"/>  
+                </apex:outputPanel>
+                </apex:facet>
+            </apex:actionStatus>
+            </apex:pageBlockButtons>
+                
+                <apex:outputPanel id="KeyPanel">
+                    <apex:pageBlockSection rendered="{!DisplayKey}" title="{!$Label.Encryption_Key_Display_Section}" columns="2">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="Keysection" value="{!$Label.Encryption_Key_Success_Message}"></apex:outputLabel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem dataStyle="font-weight:bold; font-size:16px; color: green;">
+                        <apex:outputLabel id="Keysection" value="{!GeneratedKey}"></apex:outputLabel>
+                    </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:outputPanel>
+
+  </apex:PageBlock>
+  </apex:form>
+  
+  <script>
+        function loading(val) {
+        if (val) {
+              document.getElementById('contentLoading').style.display = 'block';
+              document.getElementById('contentLoaded').style.display = 'none';
+            }
+        else {
+          document.getElementById('contentLoading').style.display = 'none';
+          document.getElementById('contentLoaded').style.display = 'block';
+        }
+      } 
+    </script>
+</apex:page>
